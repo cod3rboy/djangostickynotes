@@ -6,7 +6,7 @@ from . import models
 
 class HomepageTest(TestCase):
 
-    def test_status_code(self):
+    def test_url_path(self):
         response = self.client.get('/')
         self.assertEqual(response.status_code, 200)
 
@@ -20,8 +20,6 @@ class HomepageTest(TestCase):
 
 
 class NewNotePageTest(TestCase):
-    temp_note = None
-    temp_author = None
 
     def setUp(self):
         self.temp_author = get_user_model().objects.create(
@@ -35,7 +33,7 @@ class NewNotePageTest(TestCase):
         self.temp_note.text = "This is the content of the note"
         self.temp_note.author = self.temp_author
 
-    def test_status_code(self):
+    def test_url_path(self):
         response = self.client.get('/notes/new/')
         self.assertEqual(response.status_code, 200)
 
@@ -61,8 +59,6 @@ class NewNotePageTest(TestCase):
 
 
 class NoteDetailPageTest(TestCase):
-    temp_note = None
-    temp_user = None
 
     def setUp(self):
         self.temp_user = get_user_model().objects.create(
@@ -76,7 +72,7 @@ class NoteDetailPageTest(TestCase):
             author=self.temp_user
         )
 
-    def test_status_code(self):
+    def test_url_path(self):
         response = self.client.get('/notes/1/')
         self.assertEqual(response.status_code, 200)
 
@@ -89,8 +85,48 @@ class NoteDetailPageTest(TestCase):
         self.assertTemplateUsed(response, 'notesapp/notes_detail.html')
 
     def test_page_content(self):
-        response = self.client.get(reverse('note_detail',  args=[self.temp_note.pk]))
+        response = self.client.get(reverse('note_detail', args=[self.temp_note.pk]))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.temp_note.title)
         self.assertContains(response, self.temp_note.text)
         self.assertContains(response, self.temp_note.author)
+
+
+class NoteEditPageTest(TestCase):
+
+    def setUp(self):
+        temp_author = get_user_model().objects.create(
+            username='tempuser123',
+            email='tempuser@email.com',
+            password='passtemp123',
+        )
+        self.temp_note = models.Note.objects.create(
+            title='My note title',
+            text='Text description of my node',
+            author=temp_author,
+        )
+
+    def test_url_path(self):
+        response = self.client.get('/notes/1/edit/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_url_name(self):
+        response = self.client.get(reverse('note_edit', args=[self.temp_note.pk]))
+        self.assertEqual(response.status_code, 200)
+
+    def test_template_used(self):
+        response = self.client.get(reverse('note_edit', args=[self.temp_note.pk]))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, template_name='notesapp/notes_edit.html')
+
+    def test_note_modified(self):
+        new_title = 'This is modified title'
+        new_text = 'This is modified note description'
+        response = self.client.post(reverse('note_edit', args=[self.temp_note.pk]), {
+            'title': new_title,
+            'text': new_text,
+        })
+        self.assertEqual(response.status_code, 302)
+        new_note = models.Note.objects.get(pk=self.temp_note.id)
+        self.assertEqual(new_note.title, new_title)
+        self.assertEqual(new_note.text, new_text)
