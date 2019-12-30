@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.urls import reverse
 
 
 # Note Model
@@ -20,3 +21,10 @@ class Note(models.Model):
         :return: title of the note
         """
         return self.title
+
+    def get_absolute_url(self):
+        """
+        Returns the absolute URL for model object
+        :return: Absolute URL of model object
+        """
+        return reverse('note_detail', args=[self.pk])

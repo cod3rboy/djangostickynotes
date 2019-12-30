@@ -1,0 +1,24 @@
+{% extends 'notesapp/base.html' %}
+{% load notesapp.custom_tags %}
+{% block title %}View Note{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card-detail">
+                <div class="card text-white {% random_card_background %}">
+                    <div class="card-header text-center">Author: {{ note.author }}</div>
+                    <div class="card-body">
+                        <h5 class="card-title note-detail-title">{{ note.title }}</h5>
+                        <p class="card-text note-detail-text">{{ note.text }}</p>
+                        <a href="#" class="btn btn-dark"><i class="fa fa-pencil"></i> EDIT</a>
+                    </div>
+                    <div class="card-footer text-center">
+                        <small><i class="fa fa-clock-o" aria-hidden="true"></i> Created at : {{ note.created_on }}</small> |
+                        <small><i class="fa fa-clock-o" aria-hidden="true"></i> Modified at : {{ note.updated_on }}</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

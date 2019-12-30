@@ -1,15 +1,16 @@
-body{
+body {
     background-color: #EEEEEE;
     font-family: 'Quicksand', sans-serif;
     color: #444444;
 }
-nav > a.navbar-brand, nav > a.navbar-brand{
+
+nav > a.navbar-brand, nav > a.navbar-brand {
     font-family: "Kaushan Script", cursive;
     font-size: 20pt;
     font-weight: bold;
 }
 
-div.notes-box{
+div.notes-box {
     background-color: #FFFFFF;
     min-height: 90vh;
     padding: 1rem;
@@ -18,6 +19,22 @@ div.notes-box{
     border-radius: 5px;
 }
 
-div.card-header{
+div.card-header {
     font-size: 10pt;
+}
+
+div.card-detail {
+    min-height: 80vh;
+    margin: 1rem;
+    padding: 1rem;
+}
+
+h5.note-detail-title {
+    font-weight: bold;
+}
+
+p.note-detail-text {
+    text-align: justify;
+    margin-top: 1rem;
+    margin-bottom: 5rem;
 }
