@@ -10,10 +10,17 @@
             {% for note in object_list %}
                 <div class="col-md-4 col-lg-3">
                 <div class="card text-white {% random_card_background %} mb-3  mx-auto" style="max-width: 18rem;">
-                    <div class="card-header">Created at : {{ note.created_on }} - Author : {{ note.author }}</div>
+                    <div class="card-header">
+                        <small><i class="fa fa-clock-o" aria-hidden="true"></i> {{ note.created_on }} </small>
+                        |
+                        <small><i class="fa fa-user-o" aria-hidden="true"></i> {{ note.author }} </small>
+                    </div>
                     <div class="card-body">
                         <h5 class="card-title">{{ note.title }}</h5>
                         <p class="card-text">{{ note.text }}</p>
+                    </div>
+                    <div class="card-footer text-center">
+                         <a class="btn btn-sm btn-light" href="{% url 'note_detail' note.pk %}"><i class="fa fa-sticky-note-o" aria-hidden="true"></i> View Note</a>
                     </div>
                 </div>
             </div>

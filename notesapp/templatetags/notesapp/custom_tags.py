@@ -11,7 +11,6 @@ def rand_card_bg():
         'bg-primary',
         'bg-secondary',
         'bg-danger',
-        'bg-warning',
         'bg-success',
         'bg-dark'
     ]

@@ -130,3 +130,42 @@ class NoteEditPageTest(TestCase):
         new_note = models.Note.objects.get(pk=self.temp_note.id)
         self.assertEqual(new_note.title, new_title)
         self.assertEqual(new_note.text, new_text)
+
+
+class NoteDeletePageTest(TestCase):
+
+    def setUp(self):
+        temp_user = get_user_model().objects.create(
+            username='tempuser123',
+            email='tempuser123@email.com',
+            password='passtemp123',
+        )
+        self.temp_note = models.Note.objects.create(
+            title='Temp note title',
+            text='This is description of temp note',
+            author=temp_user
+        )
+
+    def test_url_path(self):
+        response = self.client.get('/notes/1/delete/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_url_name(self):
+        response = self.client.get(reverse('note_delete', args=[self.temp_note.pk]))
+        self.assertEqual(response.status_code, 200)
+
+    def test_template_used(self):
+        response = self.client.get(reverse('note_delete', args=[self.temp_note.pk]))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, template_name='notesapp/notes_delete.html')
+
+    def test_note_deleted(self):
+        response = self.client.post(reverse('note_delete', args=[self.temp_note.pk]))
+        self.assertEqual(response.status_code, 302)
+        note = None
+        try:
+            note = models.Note.objects.get(pk=self.temp_note.id)
+        except models.Note.DoesNotExist:
+            pass
+
+        self.assertEqual(note, None)
