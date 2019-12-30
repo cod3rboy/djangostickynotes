@@ -1,0 +1,23 @@
+body{
+    background-color: #EEEEEE;
+    font-family: 'Quicksand', sans-serif;
+    color: #444444;
+}
+nav > a.navbar-brand, nav > a.navbar-brand{
+    font-family: "Kaushan Script", cursive;
+    font-size: 20pt;
+    font-weight: bold;
+}
+
+div.notes-box{
+    background-color: #FFFFFF;
+    min-height: 90vh;
+    padding: 1rem;
+    margin: 1rem;
+    border: 1px solid #DDDDDD;
+    border-radius: 5px;
+}
+
+div.card-header{
+    font-size: 10pt;
+}

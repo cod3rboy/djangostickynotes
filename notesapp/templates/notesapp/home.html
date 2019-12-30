@@ -1,0 +1,23 @@
+{% extends 'notesapp/base.html' %}
+
+{% load notesapp.custom_tags %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+    <div class="notes-box">
+        <div class="row">
+            {% for note in object_list %}
+                <div class="col-md-4 col-lg-3">
+                <div class="card text-white {% random_card_background %} mb-3  mx-auto" style="max-width: 18rem;">
+                    <div class="card-header">Created at : {{ note.created_on }} - Author : {{ note.author }}</div>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ note.title }}</h5>
+                        <p class="card-text">{{ note.text }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

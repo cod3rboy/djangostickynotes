@@ -1,3 +1,9 @@
 from django.shortcuts import render
+from django.views.generic import ListView
+from .models import Note
 
-# Create your views here.
+
+class HomepageView(ListView):
+    template_name = 'notesapp/home.html'
+    model = Note
+
