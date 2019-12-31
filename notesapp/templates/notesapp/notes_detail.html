@@ -1,5 +1,9 @@
 {% extends 'notesapp/base.html' %}
+
 {% load notesapp.custom_tags %}
+
+{% load humanize %}
+
 {% block title %}View Note{% endblock %}
 
 {% block content %}
@@ -19,8 +23,8 @@
                         <p class="card-text note-detail-text">{{ note.text }}</p>
                     </div>
                     <div class="card-footer text-center">
-                        <small><i class="fa fa-clock-o" aria-hidden="true"></i> Created : {{ note.created_on }}</small> |
-                        <small><i class="fa fa-clock-o" aria-hidden="true"></i> Last Modified : {{ note.updated_on }}</small>
+                        <small><i class="fa fa-clock-o" aria-hidden="true"></i> Created : {{ note.created_on|naturaltime }}</small> |
+                        <small><i class="fa fa-clock-o" aria-hidden="true"></i> Last Modified : {{ note.updated_on|naturaltime }}</small>
                     </div>
                 </div>
             </div>

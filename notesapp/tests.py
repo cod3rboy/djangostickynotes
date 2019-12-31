@@ -6,6 +6,13 @@ from . import models
 
 class HomepageTest(TestCase):
 
+    def setUp(self):
+        self.temp_user = get_user_model().objects.create(
+            username='tempuser123',
+            email='tempuser123@email.com',
+            password='passtemp123',
+        )
+
     def test_url_path(self):
         response = self.client.get('/')
         self.assertEqual(response.status_code, 200)
@@ -17,6 +24,24 @@ class HomepageTest(TestCase):
     def test_template_used(self):
         response = self.client.get(reverse('home'))
         self.assertTemplateUsed(response, template_name='notesapp/home.html')
+
+    def test_posts_appear(self):
+        note_one = models.Note.objects.create(
+            title='First Note',
+            text='First Note Text',
+            author=self.temp_user,
+        )
+        note_two = models.Note.objects.create(
+            title='Second Note',
+            text='Second Note Text',
+            author=self.temp_user,
+        )
+        response = self.client.get(reverse('home'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, note_one.get_short_title())
+        self.assertContains(response, note_one.get_short_text())
+        self.assertContains(response, note_two.get_short_title())
+        self.assertContains(response, note_two.get_short_text())
 
 
 class NewNotePageTest(TestCase):
