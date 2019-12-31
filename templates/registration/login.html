@@ -1,0 +1,21 @@
+{% extends 'notesapp/base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block title %}Log in{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-6 offset-lg-3">
+            <form class="login-form" method="POST" action="">
+                <legend><i class="fa fa-user"></i> Log In</legend>
+                {% csrf_token %}
+                {{ form|crispy }}
+                <button class="btn btn-primary" type="submit"><i class="fa fa-sign-in" aria-hidden="true"></i> Log In</button>
+                <a class="btn btn-info" href="{% url 'password_reset' %}">Forgot Password ?</a>
+                <hr>
+                <p class="mt-5">Not registered yet? <a class="btn btn-info" href="{% url 'signup' %}">Sign Up</a></p>
+            </form>
+        </div>
+    </div>
+{% endblock %}

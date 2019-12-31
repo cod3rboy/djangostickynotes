@@ -39,7 +39,7 @@ p.note-detail-text {
     margin-top: 1rem;
 }
 
-form.note-form {
+form.note-form, form.login-form, form.signup-form, form.account-form {
     background-color: #FFFFFF;
     color: #222222;
     padding: 2rem;
