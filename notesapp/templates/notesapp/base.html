@@ -21,17 +21,33 @@
 <body>
 <nav class="navbar sticky-top navbar-expand-lg navbar-light bg-light">
     <a class="navbar-brand" href="{% url 'home' %}"><i class="fa fa-sticky-note-o" aria-hidden="true"></i> NOTES APP</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item">
-                <a class="btn nav-link text-light bg-dark" href="{% url 'note_new' %}"><i class="fa fa-plus" aria-hidden="true"></i> New Note</a>
-            </li>
-        </ul>
-    </div>
+    {% if user.is_authenticated %}
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item mx-1 my-1">
+                    <a class="btn nav-link text-light bg-dark" href="{% url 'note_new' %}"><i class="fa fa-plus" aria-hidden="true"></i> New
+                        Note</a>
+                </li>
+                <li class="nav-item dropdown mx-1 my-1">
+                    <a class="nav-link dropdown-toggle btn btn-dark text-light" href="#" id="navbarDropdown" role="button"
+                       data-toggle="dropdown" aria-haspopup="true"
+                       aria-expanded="false">
+                        <i class="fa fa-gear" aria-hidden="true"></i> {{ user.username }}&apos;s Settings
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="#"><i class="fa fa-user"></i> Account</a>
+                        <a class="dropdown-item" href="{% url 'password_change' %}"><i class="fa fa-key"></i> Change Password</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="{% url 'logout' %}"><i class="fa fa-sign-out"></i> Log out</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    {% endif %}
 </nav>
 <div class="container">
     {% block content %}

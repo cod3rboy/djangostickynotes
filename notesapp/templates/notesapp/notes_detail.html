@@ -11,14 +11,15 @@
         <div class="col-12">
             <div class="card-detail">
                 <div class="card text-white {% random_card_background %}">
-                    <div class="card-header text-center">
-                        <span style="float: left">
-                            <a href="{% url 'home' %}" class="btn btn-light" title="Back to all notes"><i class="fa fa-arrow-left"></i></a>
+                    <div class="card-header">
+                        <span class="ml-auto">
+                            <a href="{% url 'home' %}" class="btn btn-light" title="Back to all notes"><i class="fa fa-arrow-left"></i> Back</a>
                         </span>
-                        Author: {{ note.author }}
+                        <span class="mr-auto">
+                            <a href="{% url 'note_edit' note.pk %}" class="btn btn-light" title="Edit Note"><i class="fa fa-pencil"></i> Edit</a>
+                        </span>
                     </div>
                     <div class="card-body">
-                        <a href="{% url 'note_edit' note.pk %}" class="btn btn-light" title="Edit Note"><i class="fa fa-pencil"></i></a>
                         <h5 class="card-title note-detail-title">{{ note.title }}</h5>
                         <p class="card-text note-detail-text">{{ note.text }}</p>
                     </div>

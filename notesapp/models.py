@@ -17,13 +17,13 @@ class Note(models.Model):
 
     def get_short_title(self):
         title = str(self.title)
-        length = 15
+        length = 25
         short_title = str(title)[0:min(len(title), length)]
         return short_title + ' ...'
 
     def get_short_text(self):
         text = str(self.text)
-        length = 20
+        length = 40
         short_text = str(text)[0:min(len(text), length)]
         return short_text + ' ...'
 

@@ -7,11 +7,13 @@ from . import models
 class HomepageTest(TestCase):
 
     def setUp(self):
-        self.temp_user = get_user_model().objects.create(
+        self.temp_user = get_user_model().objects.create_user(
             username='tempuser123',
             email='tempuser123@email.com',
             password='passtemp123',
         )
+        login = self.client.login(username='tempuser123', password='passtemp123')
+        self.assertTrue(login)
 
     def test_url_path(self):
         response = self.client.get('/')
@@ -47,16 +49,18 @@ class HomepageTest(TestCase):
 class NewNotePageTest(TestCase):
 
     def setUp(self):
-        self.temp_author = get_user_model().objects.create(
-            username='user123',
-            email='user123@email.com',
-            password='password'
+        self.temp_user = get_user_model().objects.create_user(
+            username='tempuser123',
+            email='tempuser123@email.com',
+            password='passtemp123',
         )
+        login = self.client.login(username='tempuser123', password='passtemp123')
+        self.assertTrue(login)
 
         self.temp_note = models.Note()
         self.temp_note.title = "This is a title of note"
         self.temp_note.text = "This is the content of the note"
-        self.temp_note.author = self.temp_author
+        self.temp_note.author = self.temp_user
 
     def test_url_path(self):
         response = self.client.get('/notes/new/')
@@ -86,11 +90,14 @@ class NewNotePageTest(TestCase):
 class NoteDetailPageTest(TestCase):
 
     def setUp(self):
-        self.temp_user = get_user_model().objects.create(
+        self.temp_user = get_user_model().objects.create_user(
             username='tempuser123',
-            email='tempuser@email.com',
+            email='tempuser123@email.com',
             password='passtemp123',
         )
+        login = self.client.login(username='tempuser123', password='passtemp123')
+        self.assertTrue(login)
+
         self.temp_note = models.Note.objects.create(
             title="Temp note title",
             text="Temp note text is here",
@@ -120,15 +127,18 @@ class NoteDetailPageTest(TestCase):
 class NoteEditPageTest(TestCase):
 
     def setUp(self):
-        temp_author = get_user_model().objects.create(
+        self.temp_user = get_user_model().objects.create_user(
             username='tempuser123',
-            email='tempuser@email.com',
+            email='tempuser123@email.com',
             password='passtemp123',
         )
+        login = self.client.login(username='tempuser123', password='passtemp123')
+        self.assertTrue(login)
+
         self.temp_note = models.Note.objects.create(
             title='My note title',
             text='Text description of my node',
-            author=temp_author,
+            author=self.temp_user,
         )
 
     def test_url_path(self):
@@ -160,15 +170,18 @@ class NoteEditPageTest(TestCase):
 class NoteDeletePageTest(TestCase):
 
     def setUp(self):
-        temp_user = get_user_model().objects.create(
+        self.temp_user = get_user_model().objects.create_user(
             username='tempuser123',
             email='tempuser123@email.com',
             password='passtemp123',
         )
+        login = self.client.login(username='tempuser123', password='passtemp123')
+        self.assertTrue(login)
+
         self.temp_note = models.Note.objects.create(
             title='Temp note title',
             text='This is description of temp note',
-            author=temp_user
+            author=self.temp_user
         )
 
     def test_url_path(self):
