@@ -3,3 +3,4 @@ db.sqlite3
 /sent_emails
 */__pycache__
 /__pycache__
+/static
