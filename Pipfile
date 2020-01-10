@@ -10,6 +10,8 @@ django = "*"
 django-crispy-forms = "*"
 gunicorn = "*"
 whitenoise = "*"
+dj-database-url = "*"
+psycopg2 = "==2.8.4"
 
 [requires]
 python_version = "3.7"
