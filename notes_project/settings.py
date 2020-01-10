@@ -28,7 +28,7 @@ SECRET_KEY = 'd%!w1#djqg&=j8=*r*2r2&u7%zu#n!rwt9qvo=wymwey0t&nhx'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'stickynotesapp.herokuapp.com']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'stickynotesapp.herokuapp.com', '192.168.31.155', ]
 
 # Application definition
 
