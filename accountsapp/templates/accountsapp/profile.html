@@ -1,0 +1,36 @@
+{% extends 'notesapp/base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% load static %}
+
+{% block title %}{{ siteuser.first_name }}&apos;s Profile{% endblock %}
+
+{% block content %}
+    <div class="container bg-light mt-3 p-2 text-dark">
+        <div class="row">
+            <div class="col-lg-12">
+                <h1 class="text-center">{{ siteuser.first_name }}&apos; Profile</h1>
+                <hr>
+                <div class="card-group">
+                    <div class="card d-none d-md-block">
+                        <div class="card-body">
+                            <img class="img-fluid d-block mx-auto" src="{% static 'img/mirror.png' %}" alt="girl looking at mirror">
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="fa fa-user-o" aria-hidden="true"></i> Full Name</h5>
+                            <p class="card-text text-muted">{{ siteuser.get_full_name }}</p>
+                            <h5 class="card-title"><i class="fa fa-id-card-o" aria-hidden="true"></i> Username</h5>
+                            <p class="card-text text-muted">{{ siteuser.username }}</p>
+                            <h5 class="card-title"><i class="fa fa-at" aria-hidden="true"></i> Email</h5>
+                            <p class="card-text text-muted">{{ siteuser.email }}</p>
+                            <a href="{% url 'profile_change' %}" class="btn btn-primary"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Change</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
