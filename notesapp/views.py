@@ -25,24 +25,27 @@ class NoteCreateView(LoginRequiredMixin, CreateView):
 class NoteDetailView(LoginRequiredMixin, DetailView):
     template_name = 'notesapp/notes_detail.html'
     model = Note
+    slug_field = 'slug'
 
     def get_queryset(self):
-        return self.model.objects.filter(author=self.request.user, id=self.kwargs['pk'])
+        return self.model.objects.filter(author=self.request.user, slug=self.kwargs['slug'])
 
 
 class NoteEditView(LoginRequiredMixin, UpdateView):
     template_name = 'notesapp/notes_edit.html'
     model = Note
     fields = ('title', 'text')
+    slug_field = 'slug'
 
     def get_queryset(self):
-        return self.model.objects.filter(author=self.request.user, id=self.kwargs['pk'])
+        return self.model.objects.filter(author=self.request.user, slug=self.kwargs['slug'])
 
 
 class NoteDeleteView(LoginRequiredMixin, DeleteView):
     template_name = 'notesapp/notes_delete.html'
     model = Note
+    slug_field = 'slug'
     success_url = reverse_lazy('home')
 
     def get_queryset(self):
-        return self.model.objects.filter(author=self.request.user, id=self.kwargs['pk'])
+        return self.model.objects.filter(author=self.request.user, slug=self.kwargs['slug'])

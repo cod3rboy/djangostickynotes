@@ -1,6 +1,7 @@
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth import get_user_model
+from django.utils.crypto import get_random_string
 from . import models
 
 
@@ -105,19 +106,19 @@ class NoteDetailPageTest(TestCase):
         )
 
     def test_url_path(self):
-        response = self.client.get('/notes/1/')
+        response = self.client.get('/notes/' + self.temp_note.slug + '/')
         self.assertEqual(response.status_code, 200)
 
     def test_url_name(self):
-        response = self.client.get(reverse('note_detail', args=[self.temp_note.pk]))
+        response = self.client.get(reverse('note_detail', args=[self.temp_note.slug]))
         self.assertEqual(response.status_code, 200)
 
     def test_template_used(self):
-        response = self.client.get(reverse('note_detail', args=[self.temp_note.pk]))
+        response = self.client.get(reverse('note_detail', args=[self.temp_note.slug]))
         self.assertTemplateUsed(response, 'notesapp/notes_detail.html')
 
     def test_page_content(self):
-        response = self.client.get(reverse('note_detail', args=[self.temp_note.pk]))
+        response = self.client.get(reverse('note_detail', args=[self.temp_note.slug]))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.temp_note.title)
         self.assertContains(response, self.temp_note.text)
@@ -142,22 +143,22 @@ class NoteEditPageTest(TestCase):
         )
 
     def test_url_path(self):
-        response = self.client.get('/notes/1/edit/')
+        response = self.client.get('/notes/' + self.temp_note.slug + '/edit/')
         self.assertEqual(response.status_code, 200)
 
     def test_url_name(self):
-        response = self.client.get(reverse('note_edit', args=[self.temp_note.pk]))
+        response = self.client.get(reverse('note_edit', args=[self.temp_note.slug]))
         self.assertEqual(response.status_code, 200)
 
     def test_template_used(self):
-        response = self.client.get(reverse('note_edit', args=[self.temp_note.pk]))
+        response = self.client.get(reverse('note_edit', args=[self.temp_note.slug]))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, template_name='notesapp/notes_edit.html')
 
     def test_note_modified(self):
         new_title = 'This is modified title'
         new_text = 'This is modified note description'
-        response = self.client.post(reverse('note_edit', args=[self.temp_note.pk]), {
+        response = self.client.post(reverse('note_edit', args=[self.temp_note.slug]), {
             'title': new_title,
             'text': new_text,
         })
@@ -185,20 +186,20 @@ class NoteDeletePageTest(TestCase):
         )
 
     def test_url_path(self):
-        response = self.client.get('/notes/1/delete/')
+        response = self.client.get('/notes/' + self.temp_note.slug + '/delete/')
         self.assertEqual(response.status_code, 200)
 
     def test_url_name(self):
-        response = self.client.get(reverse('note_delete', args=[self.temp_note.pk]))
+        response = self.client.get(reverse('note_delete', args=[self.temp_note.slug]))
         self.assertEqual(response.status_code, 200)
 
     def test_template_used(self):
-        response = self.client.get(reverse('note_delete', args=[self.temp_note.pk]))
+        response = self.client.get(reverse('note_delete', args=[self.temp_note.slug]))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, template_name='notesapp/notes_delete.html')
 
     def test_note_deleted(self):
-        response = self.client.post(reverse('note_delete', args=[self.temp_note.pk]))
+        response = self.client.post(reverse('note_delete', args=[self.temp_note.slug]))
         self.assertEqual(response.status_code, 302)
         note = None
         try:

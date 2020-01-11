@@ -12,7 +12,7 @@
                 {% csrf_token %}
                 {{ form|crispy }}
                 <button type="submit" class="btn btn-success"><i class="fa fa-floppy-o" aria-hidden="true"></i> Save Changes</button>
-                <a href="{% url 'note_delete' note.pk %}" class="btn btn-danger"><i class="fa fa-trash" aria-hidden="true"></i> Delete</a>
+                <a href="{% url 'note_delete' note.slug %}" class="btn btn-danger"><i class="fa fa-trash" aria-hidden="true"></i> Delete</a>
             </form>
         </div>
     </div>
