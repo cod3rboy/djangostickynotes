@@ -8,31 +8,51 @@
 
 {% block content %}
     <div class="notes-box">
-        <div class="row">
-            {% for note in object_list %}
-                <div class="col-md-6 col-lg-4">
-                    <div class="card text-white {% random_card_background %} mb-3  mx-auto" style="max-width: 18rem;">
-                        <div class="card-header">
-                            <h5 class="card-title">{{ note.get_short_title }}</h5>
-                        </div>
-                        <div class="card-body text-center">
-                            <p class="card-text text-left">{{ note.get_short_text }}</p>
-                            <a class="btn btn-sm btn-light mt-2" href="{% url 'note_detail' note.slug %}"><i class="fa fa-sticky-note-o"
-                                                                                                           aria-hidden="true"></i> View </a>
-                        </div>
-                        <div class="card-footer text-center">
-                            <small><i class="fa fa-clock-o" aria-hidden="true"></i> Created : {{ note.created_on|naturaltime }} </small>
+        {% if object_list %}
+            {# When notes list is not empty, dispay all notes. #}
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
+                <div class="col mb-4">
+                    <a class="add-note-btn" href="{% url 'note_new' %}">
+                        <i class="fa fa-plus-circle" aria-hidden="true"></i>
+                    </a>
+                </div>
+                {% for note in object_list %}
+                    <div class="col">
+                        <div class="card text-white {% random_card_background %} mb-4">
+                            <div class="card-header">
+                                <h5 class="card-title">{{ note.get_short_title }}</h5>
+                            </div>
+                            <div class="card-body position-relative  p-0">
+                                <p class="card-text text-left p-3">{{ note.get_short_text }}</p>
+                                <div class="position-absolute w-100 text-center mb-3" style="bottom: 0;">
+                                    <a class="btn btn-sm btn-light" href="{% url 'note_detail' note.slug %}">
+                                        <i class="fa fa-sticky-note-o" aria-hidden="true"></i>&nbsp;View
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="card-footer text-center">
+                                <small><i class="fa fa-clock-o" aria-hidden="true"></i> Created : {{ note.created_on|naturaltime }} </small>
+                            </div>
                         </div>
                     </div>
-                </div>
-            {% empty %}
+                {% endfor %}
+            </div>
+        {% else %}
+            {# When notes list is empty, display info message #}
+            <div class="row my-5">
                 <div class="col-12">
-                    <h5 class="text-center mt-5 text-muted"><strong><i class="fa fa-sticky-note-o" aria-hidden="true"></i> Create your first note</strong></h5>
-                    <p class="text-center mt-5">
-                        <a class="btn btn-success" href="{% url 'note_new' %}"><i class="fa fa-plus"></i> Create Note</a>
-                    </p>
+                    <h4 class="text-center text-success">
+                        <strong><i class="fa fa-sticky-note-o" aria-hidden="true"></i> Create your first note</strong>
+                    </h4>
                 </div>
-            {% endfor %}
-        </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 col-lg-4 mx-auto">
+                    <a class="add-note-btn" href="{% url 'note_new' %}">
+                        <i class="fa fa-plus-circle" aria-hidden="true"></i>
+                    </a>
+                </div>
+            </div>
+        {% endif %}
     </div>
 {% endblock %}
