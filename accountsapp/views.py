@@ -3,7 +3,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, TemplateView, UpdateView
 from django.urls import reverse_lazy, reverse
 from django.contrib.auth import get_user_model
-from .forms import SiteUserCreationForm
+from .forms import SiteUserCreationForm, SiteUserChangeForm
 
 
 class SiteUserCreateView(CreateView):
@@ -43,7 +43,7 @@ class SiteUserProfileChangeView(LoginRequiredMixin, UpdateView):
     model = get_user_model()
     template_name = 'accountsapp/profile_change.html'
     success_url = reverse_lazy('profile')
-    fields = ('first_name', 'last_name', 'email')
+    form_class = SiteUserChangeForm
 
     def get_object(self, queryset=None):
         """

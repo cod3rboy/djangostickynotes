@@ -13,17 +13,32 @@
                 <h1 class="text-center">{{ siteuser.first_name }}&apos; Profile</h1>
                 <hr>
                 <div class="card-group">
-                    <div class="card d-none d-md-block">
-                        <div class="card-body">
-                            <img class="img-fluid d-block mx-auto" src="{% static 'img/mirror.png' %}" alt="girl looking at mirror">
+                    {% if siteuser.is_male %}
+                        <div class="card d-none d-md-block">
+                            <div class="card-body">
+                                <img class="img-fluid d-block mx-auto" src="{% static 'img/male.png' %}" alt="Man">
+                            </div>
                         </div>
-                    </div>
+                    {% elif siteuser.is_female %}
+                        <div class="card d-none d-md-block">
+                            <div class="card-body">
+                                <img class="img-fluid d-block mx-auto" src="{% static 'img/female.png' %}" alt="Woman">
+                            </div>
+                        </div>
+                    {% elif siteuser.is_transgender %}
+                        <div class="card d-none d-md-block">
+                            <div class="card-body">
+                                <img class="img-fluid d-block mx-auto" src="{% static 'img/transgender.png' %}" alt="Transgender">
+                            </div>
+                        </div>
+                    {% endif %}
                     <div class="card">
                         <div class="card-body">
                             <form method="POST" action="#">
                                 {% csrf_token %}
                                 {{ form|crispy }}
-                                <button type="submit" class="btn btn-success"><i class="fa fa-floppy-o" aria-hidden="true"></i> Save Changes</button>
+                                <button type="submit" class="btn btn-success"><i class="fa fa-floppy-o" aria-hidden="true"></i> Save Changes
+                                </button>
                                 <a href="{% url 'profile' %}" class="btn btn-info"><i class="fa fa-ban" aria-hidden="true"></i> Discard</a>
                             </form>
                         </div>

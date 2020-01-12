@@ -13,20 +13,37 @@
                 <h1 class="text-center">{{ siteuser.first_name }}&apos; Profile</h1>
                 <hr>
                 <div class="card-group">
-                    <div class="card d-none d-md-block">
-                        <div class="card-body">
-                            <img class="img-fluid d-block mx-auto" src="{% static 'img/mirror.png' %}" alt="girl looking at mirror">
+                    {% if siteuser.is_male %}
+                        <div class="card d-none d-md-block">
+                            <div class="card-body">
+                                <img class="img-fluid d-block mx-auto" src="{% static 'img/male.png' %}" alt="Man">
+                            </div>
                         </div>
-                    </div>
+                    {% elif siteuser.is_female %}
+                        <div class="card d-none d-md-block">
+                            <div class="card-body">
+                                <img class="img-fluid d-block mx-auto" src="{% static 'img/female.png' %}" alt="Woman">
+                            </div>
+                        </div>
+                    {% elif siteuser.is_transgender %}
+                        <div class="card d-none d-md-block">
+                            <div class="card-body">
+                                <img class="img-fluid d-block mx-auto" src="{% static 'img/transgender.png' %}" alt="Transgender">
+                            </div>
+                        </div>
+                    {% endif %}
                     <div class="card">
                         <div class="card-body">
                             <h5 class="card-title"><i class="fa fa-user-o" aria-hidden="true"></i> Full Name</h5>
                             <p class="card-text text-muted">{{ siteuser.get_full_name }}</p>
+                            <h5 class="card-title"><i class="fa fa-venus-mars" aria-hidden="true"></i> Gender</h5>
+                            <p class="card-text text-muted">{{ siteuser.get_gender }}</p>
                             <h5 class="card-title"><i class="fa fa-id-card-o" aria-hidden="true"></i> Username</h5>
                             <p class="card-text text-muted">{{ siteuser.username }}</p>
                             <h5 class="card-title"><i class="fa fa-at" aria-hidden="true"></i> Email</h5>
                             <p class="card-text text-muted">{{ siteuser.email }}</p>
-                            <a href="{% url 'profile_change' %}" class="btn btn-primary"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Change</a>
+                            <a href="{% url 'profile_change' %}" class="btn btn-primary"><i class="fa fa-pencil-square-o"
+                                                                                            aria-hidden="true"></i> Change</a>
                             <a class="btn btn-info" href="{% url 'home' %}"><i class="fa fa-arrow-left" aria-hidden="true"></i> Back</a>
                         </div>
                     </div>
