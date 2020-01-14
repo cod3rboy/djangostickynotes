@@ -194,6 +194,12 @@ class NoteDetailPageTest(TestCase):
         response = self.client.get(reverse('note_detail', args=[other_note.slug]))
         self.assertEqual(response.status_code, 404)
 
+    def test_context_has_domain_and_protocol(self):
+        response = self.client.get(reverse('note_detail', args=[self.temp_note.slug]))
+        self.assertEqual(response.status_code, 200)
+        self.assertNotEqual(response.context['domain'], None)
+        self.assertNotEqual(response.context['protocol'], None)
+
     def test_anonymous_user_redirect(self):
         self.client.logout()
         response = self.client.get(reverse('note_detail', args=[self.temp_note.slug]))
@@ -346,3 +352,48 @@ class NoteDeletePageTest(TestCase):
         self.client.logout()
         response = self.client.get(reverse('note_delete', args=[self.temp_note.slug]))
         self.assertEqual(response.status_code, 302)
+
+
+class SharedNoteDetailPageView(TestCase):
+    def setUp(self):
+        self.temp_user_password = 'passtemp123'
+        self.temp_user = get_user_model().objects.create_user(
+            username='tempuser123',
+            email='tempuser123@email.com',
+            password=self.temp_user_password,
+        )
+        self.fake = Faker()
+        self.genders = [
+            get_user_model().Gender.MALE,
+            get_user_model().Gender.FEMALE,
+            get_user_model().Gender.TRANSGENDER,
+        ]
+        self.temp_note = models.Note.objects.create(
+            title=self.fake.sentence(),
+            text=self.fake.text(max_nb_chars=100),
+            author=self.temp_user,
+            shared=True,
+        )
+
+    def test_url_path(self):
+        response = self.client.get('/notes/shared/' + self.temp_note.slug + '/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_url_name(self):
+        response = self.client.get(reverse('shared_note_detail', args=[self.temp_note.slug]))
+        self.assertTrue(response.status_code, 200)
+
+    def test_template_used(self):
+        response = self.client.get(reverse('shared_note_detail', args=[self.temp_note.slug]))
+        self.assertTrue(response.status_code, 200)
+        self.assertTemplateUsed(response, 'notesapp/shared_note_detail.html')
+
+    def test_unshared_note_not_found(self):
+        unshared_note = models.Note.objects.create(
+            title=self.fake.sentence(),
+            text=self.fake.text(max_nb_chars=100),
+            author=self.temp_user,
+            shared=False,
+        )
+        response = self.client.get(reverse('shared_note_detail', args=[unshared_note.slug]))
+        self.assertEqual(response.status_code, 404)
