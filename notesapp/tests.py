@@ -1,7 +1,9 @@
+import random
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.utils.crypto import get_random_string
+from faker import Faker
 from . import models
 
 
@@ -15,6 +17,12 @@ class HomepageTest(TestCase):
         )
         login = self.client.login(username='tempuser123', password='passtemp123')
         self.assertTrue(login)
+        self.fake = Faker()
+        self.genders = [
+            get_user_model().Gender.MALE,
+            get_user_model().Gender.FEMALE,
+            get_user_model().Gender.TRANSGENDER,
+        ]
 
     def test_url_path(self):
         response = self.client.get('/')
@@ -45,6 +53,38 @@ class HomepageTest(TestCase):
         self.assertContains(response, note_one.get_short_text())
         self.assertContains(response, note_two.get_short_title())
         self.assertContains(response, note_two.get_short_text())
+
+    def test_posts_author(self):
+        # Create more users and notes
+        authors = []
+        for i in range(0, 5):
+            authors.append(
+                get_user_model().objects.create_user(
+                    first_name=self.fake.first_name(),
+                    last_name=self.fake.last_name(),
+                    email=self.fake.email(),
+                    gender=str(random.choice(self.genders)),
+                    username=get_random_string(length=15),
+                    password=self.fake.password())
+            )
+        authors.append(self.temp_user)
+        for i in range(0, 20):
+            models.Note.objects.create(
+                title=self.fake.sentence(),
+                text=self.fake.text(max_nb_chars=100),
+                author=random.choice(authors)
+            )
+
+        response = self.client.get(reverse('home'))
+        self.assertEqual(response.status_code, 200)
+        notes = response.context['object_list']
+        for note in notes:
+            self.assertEqual(note.author.id, self.temp_user.id)
+
+    def test_anonymous_user_redirect(self):
+        self.client.logout()
+        response = self.client.get(reverse('home'))
+        self.assertEqual(response.status_code, 302)
 
 
 class NewNotePageTest(TestCase):
@@ -87,6 +127,11 @@ class NewNotePageTest(TestCase):
         self.assertEqual(self.temp_note.text, last_note.text)
         self.assertEqual(self.temp_note.author, last_note.author)
 
+    def test_anonymous_user_redirect(self):
+        self.client.logout()
+        response = self.client.get(reverse('note_new'))
+        self.assertEqual(response.status_code, 302)
+
 
 class NoteDetailPageTest(TestCase):
 
@@ -99,9 +144,16 @@ class NoteDetailPageTest(TestCase):
         login = self.client.login(username='tempuser123', password='passtemp123')
         self.assertTrue(login)
 
+        self.fake = Faker()
+        self.genders = [
+            get_user_model().Gender.MALE,
+            get_user_model().Gender.FEMALE,
+            get_user_model().Gender.TRANSGENDER,
+        ]
+
         self.temp_note = models.Note.objects.create(
-            title="Temp note title",
-            text="Temp note text is here",
+            title=self.fake.sentence(),
+            text=self.fake.text(max_nb_chars=100),
             author=self.temp_user
         )
 
@@ -124,6 +176,29 @@ class NoteDetailPageTest(TestCase):
         self.assertContains(response, self.temp_note.text)
         self.assertContains(response, self.temp_note.author)
 
+    def test_restrict_to_view_note_of_other_user(self):
+        password = self.fake.password()
+        other_user = get_user_model().objects.create_user(
+            first_name=self.fake.first_name(),
+            last_name=self.fake.last_name(),
+            email=self.fake.email(),
+            gender=str(random.choice(self.genders)),
+            username=get_random_string(15),
+            password=password
+        )
+        other_note = models.Note.objects.create(
+            title=self.fake.sentence(),
+            text=self.fake.text(max_nb_chars=100),
+            author=other_user,
+        )
+        response = self.client.get(reverse('note_detail', args=[other_note.slug]))
+        self.assertEqual(response.status_code, 404)
+
+    def test_anonymous_user_redirect(self):
+        self.client.logout()
+        response = self.client.get(reverse('note_detail', args=[self.temp_note.slug]))
+        self.assertEqual(response.status_code, 302)
+
 
 class NoteEditPageTest(TestCase):
 
@@ -135,10 +210,15 @@ class NoteEditPageTest(TestCase):
         )
         login = self.client.login(username='tempuser123', password='passtemp123')
         self.assertTrue(login)
-
+        self.fake = Faker()
+        self.genders = [
+            get_user_model().Gender.MALE,
+            get_user_model().Gender.FEMALE,
+            get_user_model().Gender.TRANSGENDER,
+        ]
         self.temp_note = models.Note.objects.create(
-            title='My note title',
-            text='Text description of my node',
+            title=self.fake.sentence(),
+            text=self.fake.text(max_nb_chars=100),
             author=self.temp_user,
         )
 
@@ -167,6 +247,35 @@ class NoteEditPageTest(TestCase):
         self.assertEqual(new_note.title, new_title)
         self.assertEqual(new_note.text, new_text)
 
+    def test_restrict_to_edit_note_of_other_user(self):
+        other_user = get_user_model().objects.create_user(
+            first_name=self.fake.first_name(),
+            last_name=self.fake.last_name(),
+            email=self.fake.email(),
+            gender=random.choice(self.genders),
+            username=get_random_string(length=15),
+            password=self.fake.password(),
+        )
+        other_note = models.Note.objects.create(
+            title=self.fake.sentence(),
+            text=self.fake.text(max_nb_chars=100),
+            author=other_user,
+        )
+        # Restrict Get Method
+        response = self.client.get(reverse('note_edit', args=[other_note.slug]))
+        self.assertEqual(response.status_code, 404)
+        # Restrict Post Method
+        response = self.client.post(reverse('note_edit', args=[other_note.slug]), data={
+            'title': self.fake.sentence(),
+            'text': self.fake.text(max_nb_chars=100),
+        })
+        self.assertEqual(response.status_code, 404)
+
+    def test_anonymous_user_redirect(self):
+        self.client.logout()
+        response = self.client.get(reverse('note_edit', args=[self.temp_note.slug]))
+        self.assertEqual(response.status_code, 302)
+
 
 class NoteDeletePageTest(TestCase):
 
@@ -178,10 +287,15 @@ class NoteDeletePageTest(TestCase):
         )
         login = self.client.login(username='tempuser123', password='passtemp123')
         self.assertTrue(login)
-
+        self.fake = Faker()
+        self.genders = [
+            get_user_model().Gender.MALE,
+            get_user_model().Gender.FEMALE,
+            get_user_model().Gender.TRANSGENDER,
+        ]
         self.temp_note = models.Note.objects.create(
-            title='Temp note title',
-            text='This is description of temp note',
+            title=self.fake.sentence(),
+            text=self.fake.text(max_nb_chars=100),
             author=self.temp_user
         )
 
@@ -208,3 +322,27 @@ class NoteDeletePageTest(TestCase):
             pass
 
         self.assertEqual(note, None)
+
+    def test_restrict_to_delete_note_of_other_user(self):
+        other_user = get_user_model().objects.create_user(
+            first_name=self.fake.first_name(),
+            last_name=self.fake.last_name(),
+            email=self.fake.email(),
+            gender=random.choice(self.genders),
+            username=get_random_string(length=15),
+            password=self.fake.password(),
+        )
+        other_note = models.Note.objects.create(
+            title=self.fake.sentence(),
+            text=self.fake.text(max_nb_chars=100),
+            author=other_user,
+        )
+        response = self.client.get(reverse('note_delete', args=[other_note.slug]))
+        self.assertTrue(response.status_code, 404)
+        response = self.client.post(reverse('note_delete', args=[other_note.slug]))
+        self.assertTrue(response.status_code, 404)
+
+    def test_anonymous_user_redirect(self):
+        self.client.logout()
+        response = self.client.get(reverse('note_delete', args=[self.temp_note.slug]))
+        self.assertEqual(response.status_code, 302)

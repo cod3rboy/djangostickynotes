@@ -24,9 +24,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('STICKYNOTESAPP_SECRET_KEY')
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
-
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'stickynotesapp.herokuapp.com', '192.168.31.155', ]
 
 # Application definition
@@ -139,13 +136,11 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 LOGIN_REDIRECT_URL = reverse_lazy('home')
 LOGOUT_REDIRECT_URL = reverse_lazy('login')
 
-# Email Reset Settings
-# EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
-# EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails')
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.live.com'
-EMAIL_USE_TLS = True
-EMAIL_PORT = 587
-EMAIL_HOST_USER = os.environ.get('STICKYNOTESAPP_EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.environ.get('STICKYNOTESAPP_EMAIL_HOST_PASSWORD')
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+# Override Settings based on Production or Development Environment
+try:
+    from notes_project.settings_dev import *
+except ImportError:
+    try:
+        from notes_project.settings_prod import *
+    except ImportError:
+        pass
