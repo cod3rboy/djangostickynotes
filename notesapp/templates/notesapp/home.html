@@ -30,8 +30,11 @@
                                     </a>
                                 </div>
                             </div>
-                            <div class="card-footer text-center">
+                            <div class="card-footer text-justify">
                                 <small><i class="fa fa-clock-o" aria-hidden="true"></i> Created : {{ note.created_on|naturaltime }} </small>
+                                {% if note.shared %}
+                                    <span class="badge badge-pill badge-light"><i class="fa fa-share-alt" aria-hidden="true"></i> Shared</span>
+                                {% endif %}
                             </div>
                         </div>
                     </div>

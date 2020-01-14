@@ -11,19 +11,29 @@
         <div class="col-12">
             <div class="card-detail">
                 <div class="card text-white {% random_card_background %}">
-                    <div class="card-header">
+                    <div class="card-header text-dark">
                         <span class="ml-auto">
-                            <a href="{% url 'home' %}" class="btn btn-light" title="Back to all notes"><i class="fa fa-arrow-left"></i> Back</a>
+                            <a href="{% url 'home' %}" class="btn btn-sm btn-light" title="Back to all notes"><i
+                                    class="fa fa-arrow-left"></i> Back</a>
                         </span>
                         <span class="mr-auto">
-                            <a href="{% url 'note_edit' note.slug %}" class="btn btn-light" title="Edit Note"><i class="fa fa-pencil"></i> Edit</a>
+                            <a href="{% url 'note_edit' note.slug %}" class="btn btn-sm btn-light" title="Edit Note"><i
+                                    class="fa fa-pencil"></i> Edit</a>
                         </span>
+                        {% if note.shared %}
+                            <a id="showLinkButton" href="#" class="badge badge-pill badge-light float-right ml-1"
+                               data-toggle="popover" title="Link to share"
+                               data-content="{{ protocol }}://{{ domain }}{% url 'shared_note_detail' note.slug %}">
+                                <i class="fa fa-link" aria-hidden="true"></i> Show link
+                            </a>
+                            <span class="badge badge-pill badge-light float-right"><i class="fa fa-share-alt" aria-hidden="true"></i> Shared</span>
+                        {% endif %}
                     </div>
                     <div class="card-body">
                         <h5 class="card-title note-detail-title">{{ note.title }}</h5>
                         <p class="card-text note-detail-text">{{ note.text }}</p>
                     </div>
-                    <div class="card-footer text-center">
+                    <div class="card-footer text-justify">
                         <small><i class="fa fa-clock-o" aria-hidden="true"></i> Created : {{ note.created_on|naturaltime }}</small> |
                         <small><i class="fa fa-clock-o" aria-hidden="true"></i> Last Modified : {{ note.updated_on|naturaltime }}</small>
                     </div>
@@ -31,4 +41,15 @@
             </div>
         </div>
     </div>
+{% endblock %}
+
+{# Javascript code for Show Link Button #}
+{% block script %}
+    <script>
+        $(function () {
+            $("a#showLinkButton").popover({
+                container: '.text-dark'
+            });
+        });
+    </script>
 {% endblock %}

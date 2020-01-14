@@ -17,6 +17,7 @@ class Note(models.Model):
         related_name='notes',
     )
     slug = models.SlugField(blank=False, unique=True, null=True)
+    shared = models.BooleanField(blank=False, null=False, default=False)
 
     class BackgroundColors(models.TextChoices):
         MAGENTA = '#17A2B8'

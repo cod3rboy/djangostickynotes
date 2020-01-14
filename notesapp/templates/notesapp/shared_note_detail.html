@@ -1,0 +1,30 @@
+{% extends 'notesapp/base.html' %}
+
+{% load notesapp.custom_tags %}
+
+{% load humanize %}
+
+{% block title %}{{ note.title }}{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card-detail">
+                <div class="card text-white {% random_card_background %}">
+                    <div class="card-header">
+                        <i class="fa fa-sticky-note-o" aria-hidden="true"></i> <span>A {{ note.author }}&apos; Note</span>
+                        <span class="badge badge-pill badge-light float-right"><i class="fa fa-share-alt"
+                                                                                  aria-hidden="true"></i> Shared</span>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title note-detail-title">{{ note.title }}</h5>
+                        <p class="card-text note-detail-text">{{ note.text }}</p>
+                    </div>
+                    <div class="card-footer text-justify">
+                        <small><i class="fa fa-clock-o" aria-hidden="true"></i> Last Updated : {{ note.updated_on|naturaltime }}</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
