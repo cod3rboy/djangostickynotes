@@ -4,7 +4,7 @@ from .settings import BASE_DIR
 ALLOWED_HOSTS = ['stickynotesapp.herokuapp.com']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 # Email Reset Settings
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
