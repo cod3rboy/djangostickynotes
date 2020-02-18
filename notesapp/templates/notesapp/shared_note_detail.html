@@ -1,30 +1,58 @@
 {% extends 'notesapp/base.html' %}
 
-{% load notesapp.custom_tags %}
-
 {% load humanize %}
 
 {% block title %}{{ note.title }}{% endblock %}
 
+{% block stylesheet %}
+    <link rel="stylesheet" href="{{ note.font.font_url }}">
+{% endblock %}
+
 {% block content %}
     <div class="row">
-        <div class="col-12">
-            <div class="card-detail">
-                <div class="card text-white {% random_card_background %}">
-                    <div class="card-header">
-                        <i class="fa fa-sticky-note-o" aria-hidden="true"></i> <span>A {{ note.author }}&apos; Note</span>
-                        <span class="badge badge-pill badge-light float-right"><i class="fa fa-share-alt"
-                                                                                  aria-hidden="true"></i> Shared</span>
+        <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1 mt-1">
+            <div class="sticky-note" style="--note-color: {{ note.bg_color.code }};--note-font: {{ note.font.font_name }};">
+                <div class="sticky-note__head">
+                    <div class="sticky-note__head-main">
+                        <span><i class="fa fa-user-o" aria-hidden="true"></i> By {{ note.author }}</span>
+                        <span><i class="fa fa-clock-o" aria-hidden="true"></i> {{ note.updated_on|naturaltime }}</span>
                     </div>
-                    <div class="card-body">
-                        <h5 class="card-title note-detail-title">{{ note.title }}</h5>
-                        <p class="card-text note-detail-text">{{ note.text }}</p>
+                </div>
+                <div class="sticky-note__body">
+                    <div class="sticky-note__tags">
+                        {% if note.shared %}
+                            <span class="badge badge-pill badge-light"><i class="fa fa-globe"
+                                                                                      aria-hidden="true"></i> Public</span>
+                            <a id="showLinkButton" href="#" class="badge badge-pill badge-light"
+                               data-toggle="popover" title="Link to share"
+                               data-placement="top"
+                               data-content="{{ protocol }}://{{ domain }}{% url 'shared_note_detail' note.slug %}">
+                                <i class="fa fa-link" aria-hidden="true"></i> Show link
+                            </a>
+                        {% endif %}
                     </div>
-                    <div class="card-footer text-justify">
-                        <small><i class="fa fa-clock-o" aria-hidden="true"></i> Last Updated : {{ note.updated_on|naturaltime }}</small>
+                    <div class="sticky-note__title">
+                        {{ note.title }}
                     </div>
+                    <div class="sticky-note__text">
+                        {{ note.text|linebreaks }}
+                    </div>
+                </div>
+                <div class="sticky-note__tail">
+                    <div class="fold"></div>
                 </div>
             </div>
         </div>
     </div>
+{% endblock %}
+
+{# Javascript code for Show Link Button #}
+{% block script %}
+    <script>
+        $(function () {
+            $("a#showLinkButton").popover({
+                container: '.sticky-note__tags'
+            });
+        });
+    </script>
 {% endblock %}

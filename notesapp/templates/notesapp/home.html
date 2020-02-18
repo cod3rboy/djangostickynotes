@@ -1,10 +1,14 @@
 {% extends 'notesapp/base.html' %}
 
-{% load notesapp.custom_tags %}
-
 {% load humanize %}
 
 {% block title %}Home{% endblock %}
+
+{% block stylesheet %}
+    {% for font in fonts %}
+        <link rel="stylesheet" href="{{ font.font_url }}">
+    {% endfor %}
+{% endblock %}
 
 {% block content %}
     <div class="notes-box">
@@ -17,24 +21,26 @@
                     </a>
                 </div>
                 {% for note in object_list %}
-                    <div class="col">
-                        <div class="card text-white {% random_card_background %} mb-4">
-                            <div class="card-header">
-                                <h5 class="card-title">{{ note.get_short_title }}</h5>
+                    <div class="col mb-4">
+                        <div class="sticky-note-card"
+                             style="--note-font: '{{ note.font.font_name }}';--note-color:{{ note.bg_color.code }};">
+                            <div class="header">
+                                <a class="action" href="{% url 'note_detail' note.slug %}">Open</a>
                             </div>
-                            <div class="card-body position-relative  p-0">
-                                <p class="card-text text-left p-3">{{ note.get_short_text }}</p>
-                                <div class="position-absolute w-100 text-center mb-3" style="bottom: 0;">
-                                    <a class="btn btn-sm btn-light" href="{% url 'note_detail' note.slug %}">
-                                        <i class="fa fa-sticky-note-o" aria-hidden="true"></i>&nbsp;View
-                                    </a>
+                            <div class="body">
+                                <div class="title">{{ note.get_short_title }}</div>
+                                <div class="text">{{ note.get_short_text }}</div>
+                            </div>
+                            <div class="tail">
+                                <div class="content">
+                                    {% if note.shared %}
+                                        <div class="tag">
+                                            <i class="fa fa-globe" aria-hidden="true"></i> Public
+                                        </div>
+                                    {% endif %}
+                                    <div class="timestamp">Updated {{ note.updated_on|naturaltime }}</div>
                                 </div>
-                            </div>
-                            <div class="card-footer text-justify">
-                                <small><i class="fa fa-clock-o" aria-hidden="true"></i> Created : {{ note.created_on|naturaltime }} </small>
-                                {% if note.shared %}
-                                    <span class="badge badge-pill badge-light"><i class="fa fa-share-alt" aria-hidden="true"></i> Shared</span>
-                                {% endif %}
+                                <div class="fold"></div>
                             </div>
                         </div>
                     </div>

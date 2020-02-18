@@ -1,0 +1,123 @@
+@import '../mixins';
+
+// Small Sticky Note styles
+.sticky-note-card {
+  --note-color: #444;
+  --note-font: 'Quicksand';
+  --note-font-size: 1.4rem;
+  $body-height: 10vh;
+  $fold-size: 1.5rem;
+
+  display: flex;
+  flex-flow: column nowrap;
+  position: relative;
+  color: #fff;
+  min-height: 16rem;
+  width: 100%;
+
+
+  @include media-sm {
+    --note-font-size: 1.6rem;
+  }
+  @include media-md {
+    --note-font-size: 1.4rem;
+  }
+  @include media-xl {
+    --note-font-size: 1.5rem;
+  }
+
+  .header {
+    display: flex;
+
+    .action {
+      flex: 1 1;
+      text-align: center;
+      padding: .5em 1em;
+      text-decoration: none;
+      color: #fff;
+      text-transform: uppercase;
+      letter-spacing: .3rem;
+      font-weight: bold;
+      background: rgb(151, 180, 111);
+      background: linear-gradient(90deg, rgba(151, 180, 111, 1) 0%, rgba(106, 158, 45, 1) 25%, rgba(0, 140, 106, 1) 51%, rgba(16, 164, 207, 1) 78%, rgba(0, 212, 255, 1) 100%);
+      transition: all .25s linear;
+
+      &:hover {
+        letter-spacing: .6rem;
+      }
+    }
+  }
+
+  .body {
+    overflow: hidden;
+    flex: 1 1;
+    font-size: 1rem;
+    padding: 1em;
+    background-color: var(--note-color);
+    box-shadow: 0px -4px 0px rgba(0, 0, 0, .6);
+
+    * + * {
+      margin-top: .5rem;
+    }
+
+    .title, .text {
+      font-family: var(--note-font), 'Arial', sans-serif;
+    }
+
+    .title {
+      font-size: var(--note-font-size);
+    }
+
+    .text {
+      font-size: calc(var(--note-font-size) - .2rem);
+      text-align: justify;
+      line-height: 1.2;
+    }
+  }
+
+  .tail {
+    display: flex;
+    flex-flow: row nowrap;
+
+    .content {
+      flex: 1 1;
+      padding-left: 1rem;
+      font-size: .8rem;
+      overflow: hidden;
+      height: $fold-size * 2;
+      color: #ddd;
+      background-color: var(--note-color);
+
+      .tag {
+        display: inline-block;
+        color: #222;
+        padding: .2em .6em;
+        background-color: #fff;
+        border-radius: 2em;
+        font-weight: bold;
+      }
+
+      .timestamp {
+        display: block;
+        margin-top: .5rem;
+        font-size: .7rem;
+      }
+    }
+
+    .fold {
+      position: relative;
+      box-shadow: -2px -2px 0px rgba(50, 50, 50, 0.5);
+
+      &::after {
+        display: block;
+        position: relative;
+        content: " ";
+        width: 0;
+        height: 0;
+        border-width: $fold-size;
+        border-style: solid;
+        border-color: var(--note-color) transparent transparent var(--note-color);
+      }
+    }
+  }
+}

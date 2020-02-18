@@ -1,0 +1,37 @@
+.switch{
+  display: inline-block;
+  position: relative;
+  background-color: #fff;
+  font-size: .6rem;
+  width: 2.8em;
+  height: 1em;
+  border-radius: 1em;
+  box-shadow: 0px 1px 0px #555555;
+  overflow: visible;
+  cursor: pointer;
+  user-select: none;
+  outline: none;
+
+  &:focus{
+    box-shadow: 0px 2px 5px #555555;
+  }
+
+  &::before{
+    display: inline-block;
+    position: absolute;
+    content: " ";
+    right: 0;
+    height: 1.6em;
+    width: 1.6em;
+    border-radius: 1em;
+    background-color: #AAAAAA;
+    transform: translateY(-.3em) translateX(-1.3em);
+    box-shadow: 3px 3px 5px rgba(100,100,100, 0.6%);
+    transition: all .2s linear;
+  }
+
+  &.on::before{
+    background-color: #eee;
+    transform: translateY(-.3em) translateX(0);
+  }
+}

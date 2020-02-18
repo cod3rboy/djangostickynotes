@@ -1,0 +1,28 @@
+.color-chooser{
+  ul{
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  li#{&}__color{
+    display: inline-block;
+    padding: 0;
+    margin: 1em 0;
+    overflow: hidden;
+    width: 3rem;
+    height: 3rem;
+    background-color: #FFFFFF;
+    text-indent: 20em;
+    border-radius: 2rem;
+    cursor: pointer;
+  }
+
+  li#{&}__color + li#{&}__color{
+    margin-left: 1em;
+  }
+
+  li#{&}__color.selected{
+    border: .2em solid #FFFFFF;
+  }
+}

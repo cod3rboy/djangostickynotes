@@ -10,14 +10,22 @@ from . import models
 class HomepageTest(TestCase):
 
     def setUp(self):
+        self.fake = Faker()
         self.temp_user = get_user_model().objects.create_user(
             username='tempuser123',
             email='tempuser123@email.com',
             password='passtemp123',
         )
+        self.font = models.Font.objects.create(
+            font_name='Arial',
+            font_url=self.fake.url(),
+        )
+        self.color = models.Color.objects.create(
+            name='Black',
+            code='#000'
+        )
         login = self.client.login(username='tempuser123', password='passtemp123')
         self.assertTrue(login)
-        self.fake = Faker()
         self.genders = [
             get_user_model().Gender.MALE,
             get_user_model().Gender.FEMALE,
@@ -41,11 +49,15 @@ class HomepageTest(TestCase):
             title='First Note',
             text='First Note Text',
             author=self.temp_user,
+            bg_color=self.color,
+            font=self.font,
         )
         note_two = models.Note.objects.create(
             title='Second Note',
             text='Second Note Text',
             author=self.temp_user,
+            bg_color=self.color,
+            font=self.font,
         )
         response = self.client.get(reverse('home'))
         self.assertEqual(response.status_code, 200)
@@ -72,7 +84,9 @@ class HomepageTest(TestCase):
             models.Note.objects.create(
                 title=self.fake.sentence(),
                 text=self.fake.text(max_nb_chars=100),
-                author=random.choice(authors)
+                author=random.choice(authors),
+                bg_color=self.color,
+                font=self.font,
             )
 
         response = self.client.get(reverse('home'))
@@ -86,14 +100,28 @@ class HomepageTest(TestCase):
         response = self.client.get(reverse('home'))
         self.assertEqual(response.status_code, 302)
 
+    def test_context_has_font(self):
+        response = self.client.get(reverse('home'))
+        self.assertEqual(response.status_code, 200)
+        self.assertNotEqual(response.context['fonts'], None)
+
 
 class NewNotePageTest(TestCase):
 
     def setUp(self):
+        self.fake = Faker()
         self.temp_user = get_user_model().objects.create_user(
             username='tempuser123',
             email='tempuser123@email.com',
             password='passtemp123',
+        )
+        self.font = models.Font.objects.create(
+            font_name='Arial',
+            font_url=self.fake.url(),
+        )
+        self.color = models.Color.objects.create(
+            name='Black',
+            code='#000'
         )
         login = self.client.login(username='tempuser123', password='passtemp123')
         self.assertTrue(login)
@@ -102,6 +130,8 @@ class NewNotePageTest(TestCase):
         self.temp_note.title = "This is a title of note"
         self.temp_note.text = "This is the content of the note"
         self.temp_note.author = self.temp_user
+        self.temp_note.bg_color = self.color
+        self.temp_note.font = self.font
 
     def test_url_path(self):
         response = self.client.get('/notes/new/')
@@ -120,17 +150,36 @@ class NewNotePageTest(TestCase):
             'title': self.temp_note.title,
             'text': self.temp_note.text,
             'author': str(self.temp_note.author.id),
+            'bg_color': str(self.temp_note.bg_color.id),
+            'font': str(self.temp_note.font.id),
         })
         self.assertEqual(response.status_code, 302)
         last_note = models.Note.objects.all().order_by('-created_on')[0]
         self.assertEqual(self.temp_note.title, last_note.title)
         self.assertEqual(self.temp_note.text, last_note.text)
         self.assertEqual(self.temp_note.author, last_note.author)
+        self.assertEqual(self.temp_note.bg_color, last_note.bg_color)
+        self.assertEqual(self.temp_note.font, last_note.font)
 
     def test_anonymous_user_redirect(self):
         self.client.logout()
         response = self.client.get(reverse('note_new'))
         self.assertEqual(response.status_code, 302)
+
+    def test_context_has_featured_colors(self):
+        response = self.client.get(reverse('note_new'))
+        self.assertEqual(response.status_code, 200)
+        self.assertNotEqual(response.context['featured_colors'], None)
+
+    def test_context_has_colors(self):
+        response = self.client.get(reverse('note_new'))
+        self.assertEqual(response.status_code, 200)
+        self.assertNotEqual(response.context['colors'], None)
+
+    def test_context_has_fonts(self):
+        response = self.client.get(reverse('note_new'))
+        self.assertEqual(response.status_code, 200)
+        self.assertNotEqual(response.context['fonts'], None)
 
 
 class NoteDetailPageTest(TestCase):
@@ -151,10 +200,20 @@ class NoteDetailPageTest(TestCase):
             get_user_model().Gender.TRANSGENDER,
         ]
 
+        self.font = models.Font.objects.create(
+            font_name='Arial',
+            font_url=self.fake.url(),
+        )
+        self.color = models.Color.objects.create(
+            name='Black',
+            code='#000'
+        )
         self.temp_note = models.Note.objects.create(
             title=self.fake.sentence(),
             text=self.fake.text(max_nb_chars=100),
-            author=self.temp_user
+            author=self.temp_user,
+            bg_color=self.color,
+            font=self.font,
         )
 
     def test_url_path(self):
@@ -190,6 +249,8 @@ class NoteDetailPageTest(TestCase):
             title=self.fake.sentence(),
             text=self.fake.text(max_nb_chars=100),
             author=other_user,
+            font=self.font,
+            bg_color=self.color,
         )
         response = self.client.get(reverse('note_detail', args=[other_note.slug]))
         self.assertEqual(response.status_code, 404)
@@ -222,10 +283,21 @@ class NoteEditPageTest(TestCase):
             get_user_model().Gender.FEMALE,
             get_user_model().Gender.TRANSGENDER,
         ]
+
+        self.font = models.Font.objects.create(
+            font_name='Arial',
+            font_url=self.fake.url(),
+        )
+        self.color = models.Color.objects.create(
+            name='Black',
+            code='#000'
+        )
         self.temp_note = models.Note.objects.create(
             title=self.fake.sentence(),
             text=self.fake.text(max_nb_chars=100),
             author=self.temp_user,
+            bg_color=self.color,
+            font=self.font,
         )
 
     def test_url_path(self):
@@ -247,6 +319,8 @@ class NoteEditPageTest(TestCase):
         response = self.client.post(reverse('note_edit', args=[self.temp_note.slug]), {
             'title': new_title,
             'text': new_text,
+            'font': str(self.temp_note.font.id),
+            'bg_color': str(self.temp_note.bg_color.id),
         })
         self.assertEqual(response.status_code, 302)
         new_note = models.Note.objects.get(pk=self.temp_note.id)
@@ -266,6 +340,8 @@ class NoteEditPageTest(TestCase):
             title=self.fake.sentence(),
             text=self.fake.text(max_nb_chars=100),
             author=other_user,
+            bg_color=self.color,
+            font=self.font,
         )
         # Restrict Get Method
         response = self.client.get(reverse('note_edit', args=[other_note.slug]))
@@ -281,6 +357,21 @@ class NoteEditPageTest(TestCase):
         self.client.logout()
         response = self.client.get(reverse('note_edit', args=[self.temp_note.slug]))
         self.assertEqual(response.status_code, 302)
+
+    def test_context_has_featured_colors(self):
+        response = self.client.get(reverse('note_edit', args=[self.temp_note.slug]))
+        self.assertEqual(response.status_code, 200)
+        self.assertNotEqual(response.context['featured_colors'], None)
+
+    def test_context_has_colors(self):
+        response = self.client.get(reverse('note_edit', args=[self.temp_note.slug]))
+        self.assertEqual(response.status_code, 200)
+        self.assertNotEqual(response.context['colors'], None)
+
+    def test_context_has_fonts(self):
+        response = self.client.get(reverse('note_edit', args=[self.temp_note.slug]))
+        self.assertEqual(response.status_code, 200)
+        self.assertNotEqual(response.context['fonts'], None)
 
 
 class NoteDeletePageTest(TestCase):
@@ -299,10 +390,21 @@ class NoteDeletePageTest(TestCase):
             get_user_model().Gender.FEMALE,
             get_user_model().Gender.TRANSGENDER,
         ]
+
+        self.font = models.Font.objects.create(
+            font_name='Arial',
+            font_url=self.fake.url(),
+        )
+        self.color = models.Color.objects.create(
+            name='Black',
+            code='#000'
+        )
         self.temp_note = models.Note.objects.create(
             title=self.fake.sentence(),
             text=self.fake.text(max_nb_chars=100),
-            author=self.temp_user
+            author=self.temp_user,
+            bg_color=self.color,
+            font=self.font,
         )
 
     def test_url_path(self):
@@ -342,6 +444,8 @@ class NoteDeletePageTest(TestCase):
             title=self.fake.sentence(),
             text=self.fake.text(max_nb_chars=100),
             author=other_user,
+            bg_color=self.color,
+            font=self.font,
         )
         response = self.client.get(reverse('note_delete', args=[other_note.slug]))
         self.assertTrue(response.status_code, 404)
@@ -368,11 +472,21 @@ class SharedNoteDetailPageView(TestCase):
             get_user_model().Gender.FEMALE,
             get_user_model().Gender.TRANSGENDER,
         ]
+        self.font = models.Font.objects.create(
+            font_name='Arial',
+            font_url=self.fake.url(),
+        )
+        self.color = models.Color.objects.create(
+            name='Black',
+            code='#000'
+        )
         self.temp_note = models.Note.objects.create(
             title=self.fake.sentence(),
             text=self.fake.text(max_nb_chars=100),
             author=self.temp_user,
             shared=True,
+            bg_color=self.color,
+            font=self.font,
         )
 
     def test_url_path(self):
@@ -388,12 +502,20 @@ class SharedNoteDetailPageView(TestCase):
         self.assertTrue(response.status_code, 200)
         self.assertTemplateUsed(response, 'notesapp/shared_note_detail.html')
 
+    def test_context_has_domain_and_protocol(self):
+        response = self.client.get(reverse('shared_note_detail', args=[self.temp_note.slug]))
+        self.assertEqual(response.status_code, 200)
+        self.assertNotEqual(response.context['domain'], None)
+        self.assertNotEqual(response.context['protocol'], None)
+
     def test_unshared_note_not_found(self):
         unshared_note = models.Note.objects.create(
             title=self.fake.sentence(),
             text=self.fake.text(max_nb_chars=100),
             author=self.temp_user,
             shared=False,
+            font=self.font,
+            bg_color=self.color,
         )
         response = self.client.get(reverse('shared_note_detail', args=[unshared_note.slug]))
         self.assertEqual(response.status_code, 404)

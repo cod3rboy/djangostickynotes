@@ -13,6 +13,9 @@ whitenoise = "*"
 dj-database-url = "*"
 psycopg2 = "==2.8.4"
 faker = "*"
+libsass = "*"
+django-compressor = "*"
+django-sass-processor = "*"
 
 [requires]
 python_version = "3.7"

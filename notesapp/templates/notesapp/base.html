@@ -1,4 +1,5 @@
 {% load static %}
+{% load sass_tags %}
 <!Doctype html>
 <html lang="en">
 <head>
@@ -15,10 +16,12 @@
     <link href="https://fonts.googleapis.com/css?family=Kaushan+Script&display=swap" rel="stylesheet">
     <!-- Google Font Quicksand -->
     <link href="https://fonts.googleapis.com/css?family=Quicksand&display=swap" rel="stylesheet">
+    <!-- normalize.css for CSS Resets-->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" rel="stylesheet">
     <!-- Custom CSS Styles -->
-    <link rel="stylesheet" href="{% static 'css/notesapp.css' %}" type="text/css">
     {% block stylesheet %}
     {% endblock %}
+    <link rel="stylesheet" href="{% sass_src 'scss/notesapp.scss' %}" type="text/css">
 </head>
 <body>
 <nav class="navbar sticky-top navbar-expand-lg navbar-light bg-light">
@@ -31,7 +34,7 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item mx-1 my-1">
-                    <a class="btn nav-link text-light bg-dark" href="{% url 'profile'%}"><i class="fa fa-user"></i> Profile</a>
+                    <a class="btn nav-link text-light bg-dark" href="{% url 'profile' %}"><i class="fa fa-user"></i> Profile</a>
                 </li>
                 <li class="nav-item dropdown mx-1 my-1">
                     <a class="nav-link dropdown-toggle btn btn-dark text-light" href="#" id="navbarDropdown" role="button"

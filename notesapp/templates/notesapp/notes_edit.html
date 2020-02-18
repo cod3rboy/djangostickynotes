@@ -4,16 +4,230 @@
 
 {% block title %}Edit Note{% endblock %}
 
+{% block stylesheet %}
+    {% for font in fonts %}
+        <link rel="stylesheet" href="{{ font.font_url }}">
+    {% endfor %}
+{% endblock %}
+
 {% block content %}
-     <div class="row">
-        <div class="col-lg-6 offset-lg-3">
-            <form class="note-form" method="POST" action="">
-                <legend><i class="fa fa-sticky-note-o" aria-hidden="true"></i> Edit Note</legend>
-                {% csrf_token %}
-                {{ form|crispy }}
-                <button type="submit" class="btn btn-success"><i class="fa fa-floppy-o" aria-hidden="true"></i> Save Changes</button>
-                <a href="{% url 'note_delete' note.slug %}" class="btn btn-danger"><i class="fa fa-trash" aria-hidden="true"></i> Delete</a>
-            </form>
+    <div class="row">
+        <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1 mt-1">
+            <div class="sticky-note">
+                <div class="sticky-note__head">
+                    <div class="sticky-note__action-bar">
+                        <button type="submit" form="stickyNoteForm" class="sticky-note__action bg-primary"
+                                tabindex="2" title="Save"><i
+                                class="fa fa-floppy-o" aria-hidden="true"></i>
+                        </button>
+                        <a class="sticky-note__action bg-danger" tabindex="2" href="{% url 'note_delete' note.slug %}"
+                           title="Delete"><i class="fa fa-trash-o" aria-hidden="true"></i>
+                        </a>
+                        <a class="sticky-note__action bg-secondary" tabindex="2" href="{% url 'note_detail' note.slug %}"
+                           title="Back"><i class="fa fa-arrow-left" aria-hidden="true"></i></i>
+                        </a>
+                    </div>
+                    <div class="sticky-note__color-bar">
+                        <ul>
+                            {% for color in featured_colors %}
+                                <li class="sticky-note__color" style="--color-shade: {{ color.code }};" tabindex="1">{{ color.name }}</li>
+                            {% endfor %}
+                            <li class="sticky-note__menu">
+                                <button class="sticky-note__menu-btn" tabindex="1"><i class="fa fa-paint-brush" aria-hidden="true"></i>
+                                </button>
+                                <ul class="menu-list">
+                                    {% for color in colors %}
+                                        <li class="menu-item" style="--color-shade: {{ color.code }};" tabindex="1">
+                                            {{ color.name }}
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </li>
+                            <li class="sticky-note__font" tabindex="1">T</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="sticky-note__body">
+                    <h1>Edit Sticky Note</h1>
+                    <div style="margin-bottom: 1em;">
+                        <label for="sharedSwitch"><i class="fa fa-globe" aria-hidden="true"></i> Public</label>
+                        <div class="switch" id="sharedSwitch" style="margin-left: 2em;" tabindex="1"></div>
+                    </div>
+                    {{ form.non_field_errors }}
+                    <form method="POST" action="" id="stickyNoteForm">
+                        {% csrf_token %}
+                        {{ form.non_field_errors }}
+
+                        <input name="{{ form.bg_color.name }}" hidden id="noteBgColorInput" value="">
+                        <input name="{{ form.shared.name }}" hidden value="false" id="sharedInput">
+                        <input name="{{ form.font.name }}" hidden value="" id="fontInput">
+
+                        {% if form.title.errors %}
+                            <ul class="error-list">
+                                {% for error in form.title.errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                        <input class="sticky-note__field" type="text" placeholder="{{ form.title.name.title }}" name="{{ form.title.name }}"
+                               autocomplete="off" tabindex="1"
+                                {% if form.title.value %}
+                               value="{{ form.title.value }}"
+                                {% endif %}>
+
+                        {% if form.text.errors %}
+                            <ul class="error-list">
+                                {% for error in form.text.errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                        <textarea class="sticky-note__field--multiline" placeholder="Note"
+                                  name="{{ form.text.name }}"
+                                  autocomplete="off" tabindex="1">{% if form.text.value %}{{ form.text.value }}{% endif %}</textarea>
+                    </form>
+                </div>
+                <div class="sticky-note__tail">
+                    <div class="fold"></div>
+                </div>
+            </div>
         </div>
     </div>
 {% endblock %}
+
+{% block script %}
+    <script type="text/javascript">
+        (function () {
+            const noteColors = [];
+            {% for color in colors %}
+                noteColors.push({
+                    'id': {{ color.pk }},
+                    'code': '{{ color.code }}'
+                });
+            {% endfor %}
+            {% for color in featured_colors %}
+                noteColors.push({
+                    'id': {{ color.pk }},
+                    'code': '{{ color.code }}'
+                });
+            {% endfor %}
+
+            const colorElements = [];
+            const featuredColors = document.querySelectorAll('li.sticky-note__color');
+            for (let i = 0; i < featuredColors.length; i++) colorElements.push(featuredColors[i]);
+            const colorMenuItems = document.querySelectorAll('.sticky-note__menu ul.menu-list li.menu-item');
+            for (let i = 0; i < colorMenuItems.length; i++) colorElements.push(colorMenuItems[i]);
+
+            const stickyNote = document.querySelector('.sticky-note');
+            const noteBgColorInput = document.getElementById('noteBgColorInput');
+            const fontInput = document.getElementById('fontInput');
+
+            const colorMenuButton = document.querySelector('.sticky-note__menu-btn');
+            colorMenuButton.onclick = function (event) {
+                this.parentElement.classList.toggle('active');
+            };
+
+            for (let i = 0; i < colorElements.length; i++) {
+                colorElements[i].onclick = changeStickyNoteBackground;
+                colorElements[i].onkeypress = function (event) {
+                    const ENTER = 13;
+                    if (event.keyCode === ENTER) changeStickyNoteBackground.call(this, undefined);
+                }
+            }
+
+            colorElements[0].onclick();
+
+            function changeStickyNoteBackground(event, color) {
+                {# Change the color of sticky note #}
+                let selectedColor = undefined;
+                if (color === undefined) selectedColor = this.style.getPropertyValue('--color-shade');
+                else selectedColor = color;
+                stickyNote.style.setProperty('--note-color', selectedColor);
+                noteBgColorInput.setAttribute('value', findColorId(selectedColor).toString());
+            }
+
+            function findColorId(colorCode) {
+                colorCode = colorCode.trim().toLowerCase();
+                for (let i = 0; i < noteColors.length; i++) {
+                    if (noteColors[i].code.toLowerCase() === colorCode)
+                        return noteColors[i].id;
+                }
+                return -1;
+            }
+
+            function findColorCode(id) {
+                for (let i = 0; i < noteColors.length; i++) {
+                    if (noteColors[i].id === parseInt(id, 10)) return noteColors[i].code;
+                }
+                return null;
+            }
+
+            const sharedInput = document.getElementById('sharedInput');
+            let shared = sharedInput.getAttribute('value') === "true";
+            {# Javscript code for switch button behaviour #}
+            const sw = document.querySelector('.switch');
+            sw.onclick = toggleSwitch;
+            sw.onkeypress = function (event) {
+                const ENTER = 13;
+                if (event.keyCode === ENTER) toggleSwitch.call(this);
+            };
+
+            function toggleSwitch() {
+                this.classList.toggle('on');
+                shared = !shared;
+                sharedInput.setAttribute('value', shared.toString());
+            }
+
+            {% if form.shared.value %}
+                sw.onclick();
+            {% endif %}
+
+            {# Load previously selected color on redirect #}
+            {% if form.bg_color.value %}
+                const lastSelectedColor = findColorCode({{ form.bg_color.value }});
+                if (lastSelectedColor !== null) changeStickyNoteBackground(null, lastSelectedColor);
+            {% endif %}
+
+            {# Sticky Note Font Behaviour Code #}
+            const fontElement = document.querySelector('.sticky-note__font');
+            const fontList = [];
+            {% for font in fonts %}
+                fontList.push({
+                    'id': {{ font.pk }},
+                    'name': '{{ font.font_name }}',
+                    'alt': '{{ font.font_alt }}'
+                });
+            {% endfor %}
+
+            let selectedFontIndex = -1;
+
+            function changeFont() {
+                selectedFontIndex++;
+                selectedFontIndex %= fontList.length;
+                stickyNote.style.setProperty('--note-font', "'" + fontList[selectedFontIndex].name + "'");
+                fontInput.setAttribute('value', fontList[selectedFontIndex].id);
+            }
+
+            function setFontById(fontId) {
+                let index = undefined;
+                for (let i = 0; i < fontList.length; i++) {
+                    if (fontList[i].id === parseInt(fontId)) index = i;
+                }
+                if (index !== undefined) {
+                    selectedFontIndex = index - 1;
+                    changeFont();
+                }
+            }
+
+            fontElement.onclick = changeFont;
+            fontElement.onkeypress = function (event) {
+                const ENTER = 13;
+                if (event.keyCode === ENTER) changeFont();
+            };
+            changeFont();
+            {% if form.font.value %}
+                setFontById({{ form.font.value }});
+            {% endif %}
+        })();
+    </script>
+{% endblock script %}

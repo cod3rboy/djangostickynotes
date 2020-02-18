@@ -24,7 +24,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('STICKYNOTESAPP_SECRET_KEY')
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'stickynotesapp.herokuapp.com', '192.168.31.155', ]
+# Static Files Finders
+STATICFILES_FINDERS = [
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'sass_processor.finders.CssFinder', # sass_processor finder
+]
 
 # Application definition
 
@@ -39,7 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
     # 3rd Party Apps
     'crispy_forms',
-
+    'sass_processor',
     # Local Apps
     'notesapp.apps.NotesappConfig',
     'accountsapp.apps.AccountsappConfig',
@@ -118,16 +123,6 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/3.0/howto/static-files/
-
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'staticbuild'),
-]
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Crispy Forms Setting
 CRISPY_TEMPLATE_PACK = 'bootstrap4'

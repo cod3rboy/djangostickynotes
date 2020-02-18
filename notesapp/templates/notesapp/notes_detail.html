@@ -1,42 +1,53 @@
 {% extends 'notesapp/base.html' %}
 
-{% load notesapp.custom_tags %}
-
 {% load humanize %}
 
 {% block title %}View Note{% endblock %}
 
+{% block stylesheet %}
+    <link rel="stylesheet" href="{{ note.font.font_url }}">
+{% endblock %}
+
 {% block content %}
     <div class="row">
-        <div class="col-12">
-            <div class="card-detail">
-                <div class="card text-white {% random_card_background %}">
-                    <div class="card-header text-dark">
-                        <span class="ml-auto">
-                            <a href="{% url 'home' %}" class="btn btn-sm btn-light" title="Back to all notes"><i
-                                    class="fa fa-arrow-left"></i> Back</a>
-                        </span>
-                        <span class="mr-auto">
-                            <a href="{% url 'note_edit' note.slug %}" class="btn btn-sm btn-light" title="Edit Note"><i
-                                    class="fa fa-pencil"></i> Edit</a>
-                        </span>
+        <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1 mt-1">
+            <div class="sticky-note" style="--note-color: {{ note.bg_color.code }};--note-font: {{ note.font.font_name }};">
+                <div class="sticky-note__head">
+                    <div class="sticky-note__action-bar">
+                        <a class="sticky-note__action bg-primary" tabindex="2" href="{% url 'note_edit' note.slug %}" title="Edit"><i
+                                class="fa fa-pencil" aria-hidden="true"></i>
+                        </a>
+                        <a class="sticky-note__action bg-secondary" tabindex="2" href="{% url 'home' %}" title="Back"><i
+                                class="fa fa-arrow-left" aria-hidden="true"></i>
+                        </a>
+                    </div>
+                    <div class="sticky-note__head-main">
+                        <span><i class="fa fa-clock-o" aria-hidden="true"></i> Created : {{ note.created_on|naturaltime }}</span>
+                        <span><i class="fa fa-clock-o" aria-hidden="true"></i> Updated : {{ note.updated_on|naturaltime }}</span>
+                    </div>
+                </div>
+                <div class="sticky-note__body">
+                    <div class="sticky-note__tags">
                         {% if note.shared %}
-                            <a id="showLinkButton" href="#" class="badge badge-pill badge-light float-right ml-1"
+                            <span class="badge badge-pill badge-light"><i class="fa fa-globe"
+                                                                                      aria-hidden="true"></i> Public</span>
+                            <a id="showLinkButton" href="#" class="badge badge-pill badge-light"
                                data-toggle="popover" title="Link to share"
+                               data-placement="top"
                                data-content="{{ protocol }}://{{ domain }}{% url 'shared_note_detail' note.slug %}">
                                 <i class="fa fa-link" aria-hidden="true"></i> Show link
                             </a>
-                            <span class="badge badge-pill badge-light float-right"><i class="fa fa-share-alt" aria-hidden="true"></i> Shared</span>
                         {% endif %}
                     </div>
-                    <div class="card-body">
-                        <h5 class="card-title note-detail-title">{{ note.title }}</h5>
-                        <p class="card-text note-detail-text">{{ note.text }}</p>
+                    <div class="sticky-note__title">
+                        {{ note.title }}
                     </div>
-                    <div class="card-footer text-justify">
-                        <small><i class="fa fa-clock-o" aria-hidden="true"></i> Created : {{ note.created_on|naturaltime }}</small> |
-                        <small><i class="fa fa-clock-o" aria-hidden="true"></i> Last Modified : {{ note.updated_on|naturaltime }}</small>
+                    <div class="sticky-note__text">
+                        {{ note.text|linebreaks }}
                     </div>
+                </div>
+                <div class="sticky-note__tail">
+                    <div class="fold"></div>
                 </div>
             </div>
         </div>
@@ -48,7 +59,7 @@
     <script>
         $(function () {
             $("a#showLinkButton").popover({
-                container: '.text-dark'
+                container: '.sticky-note__tags'
             });
         });
     </script>
