@@ -24,9 +24,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('STICKYNOTESAPP_SECRET_KEY')
 
-# Administrators to email server error in production
-ADMINS = [('Dheeraj Kumar', 'dkcalotra@hotmail.com'), ]
-
 # Static Files Finders
 STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.FileSystemFinder',

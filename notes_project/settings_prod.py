@@ -15,8 +15,13 @@ EMAIL_HOST_USER = os.environ.get('STICKYNOTESAPP_EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('STICKYNOTESAPP_EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
+# Administrators to email server error in production
+ADMIN_NAME = os.environ.get('STICKYNOTESAPP_ADMIN_NAME')
+ADMIN_EMAIL = os.environ.get('StICKYNOTESAPP_ADMIN_EMAIL')
+ADMINS = [(ADMIN_NAME, ADMIN_EMAIL), ]
+
 # Default Server email address for error reporting
-SERVER_EMAIL = 'error@noreply.com'
+SERVER_EMAIL = os.environ.get('STICKYNOTESAPP_SERVER_EMAIL')
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
