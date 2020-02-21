@@ -17,7 +17,7 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # Administrators to email server error in production
 ADMIN_NAME = os.environ.get('STICKYNOTESAPP_ADMIN_NAME')
-ADMIN_EMAIL = os.environ.get('StICKYNOTESAPP_ADMIN_EMAIL')
+ADMIN_EMAIL = os.environ.get('STICKYNOTESAPP_ADMIN_EMAIL')
 ADMINS = [(ADMIN_NAME, ADMIN_EMAIL), ]
 
 # Default Server email address for error reporting
@@ -31,4 +31,4 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'staticbuild'),
 ]
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
